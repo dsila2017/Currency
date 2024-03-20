@@ -16,6 +16,9 @@ struct MainView: View {
             VStack {
                 CustomRectangle(backgroundColor: .yellow, mainText: "Send", array: model.data, selectedCurrency: $model.selectedFromCurrency, amount: $model.amount, disabled: false)
                     .keyboardType(.numberPad)
+                    .onTapGesture {
+                        UIApplication.shared.endEditing()
+                    }
                 //                .onChange(of: model.amount + model.selectedFromCurrency + model.selectedToCurrency) {
                 //                    Task {
                 //                        do {
@@ -121,5 +124,11 @@ struct secondaryRectangle: View {
             .foregroundStyle(.customText)
             .font(.subheadline.weight(.medium))
         }
+    }
+}
+
+extension UIApplication {
+    func endEditing() {
+        sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
     }
 }
