@@ -16,7 +16,9 @@ class viewModel: ObservableObject {
     @Published var selectedFromCurrency = "Select"
     @Published var selectedToCurrency = "Select"
     @Published var amount = ""
+    @Published var exchangeRate = "0.00"
     @Published var exchangeResult = ""
+    @Published var exchangeDate = "Now"
     @Published var showDataAlert = false
     @Published var showDataAlertType: AlertType?
     
@@ -33,7 +35,9 @@ class viewModel: ObservableObject {
         if dataValidation() {
             do {
                 let result: ExchangeRateModel = try await NetworkManager.shared.fetch(from: "https://v6.exchangerate-api.com/v6/5a9b9687e1b86c4c225b9e28/pair/\(selectedFromCurrency)/\(selectedToCurrency)/\(amount)")
+                exchangeRate = String(round(result.conversionRate * 1000) / 1000)
                 exchangeResult = String(round(result.conversionResult * 1000) / 1000)
+                exchangeDate = result.timeLastUpdateUTC
             } catch {
                 print(error)
             }

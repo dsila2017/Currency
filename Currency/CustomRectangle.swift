@@ -20,7 +20,7 @@ struct CustomRectangle: View {
         ZStack {
             RoundedRectangle(cornerSize: CGSize(width: 20, height: 20), style: .continuous)
                 .frame(maxHeight: 170)
-                .foregroundStyle(backgroundColor.opacity(1))
+                .foregroundStyle(backgroundColor.opacity(0.3))
             VStack {
                 Text(mainText)
                     .foregroundStyle(.customSecondary)
@@ -30,9 +30,9 @@ struct CustomRectangle: View {
                 HStack {
                     TextField(text: $amount) {
                         Text("Amount")
-                            .foregroundStyle(.customSecondary).opacity(0.4)
+                            .foregroundStyle(.customSecondaryDim)
                     }
-                    .foregroundStyle(.customSecondary).opacity(0.4)
+                    .foregroundStyle(.customSecondary)
                     .padding()
                     .frame(height: 70)
                     .font(.largeTitle.bold())
