@@ -8,69 +8,68 @@
 import SwiftUI
 
 struct MainView: View {
-    @FocusState var isInputActive: Bool
     @ObservedObject var model = viewModel()
+    @FocusState var isFocused: Bool
+    
     var body: some View {
-        VStack {
-            Text("Convert")
-                .font(.headline.bold())
+        GeometryReader { geometry in
             VStack {
-                CustomRectangle(backgroundColor: .yellow, mainText: "Send", array: model.data, selectedCurrency: $model.selectedFromCurrency, amount: $model.amount, disabled: false)
-                    .keyboardType(.decimalPad)
-                    .focused($isInputActive)
-                    .toolbar {
-                        ToolbarItemGroup(placement: .keyboard) {
-                            Spacer()
-                            Button("Done") {
-                                model.filterLetters()
-                                model.clearExchangeAmounts()
-                                isInputActive = false
+                Text("Convert")
+                    .font(.headline.bold())
+                VStack {
+                    CustomRectangle(backgroundColor: .yellow, mainText: "Send", array: model.data, selectedCurrency: $model.selectedFromCurrency, amount: $model.amount, disabled: false, isFocused: $isFocused)
+                        .keyboardType(.decimalPad)
+                        .toolbar {
+                            ToolbarItemGroup(placement: .keyboard) {
+                                Spacer()
+                                Button("Done") {
+                                    model.filterLetters()
+                                    model.clearExchangeAmounts()
+                                    isFocused = false
+                                }
+                                .fontWeight(.bold)
                             }
-                            .fontWeight(.bold)
                         }
-                    }
-                //                .onChange(of: model.amount + model.selectedFromCurrency + model.selectedToCurrency) {
-                //                    Task {
-                //                        do {
-                //                            try await model.exchange()
-                //                        } catch {
-                //                            print(error)
-                //                        }
-                //                    }
-                //                }
-                CustomRectangle(backgroundColor: .purple, mainText: "Receive", array: model.data, selectedCurrency: $model.selectedToCurrency, amount: $model.exchangeResult, disabled: true)
+                    //                .onChange(of: model.amount + model.selectedFromCurrency + model.selectedToCurrency) {
+                    //                    Task {
+                    //                        do {
+                    //                            try await model.exchange()
+                    //                        } catch {
+                    //                            print(error)
+                    //                        }
+                    //                    }
+                    //                }
+                    CustomRectangle(backgroundColor: .purple, mainText: "Receive", array: model.data, selectedCurrency: $model.selectedToCurrency, amount: $model.exchangeResult, disabled: true, isFocused: $isFocused)
+                }
+                .overlay {
+                    Button(action: {
+                        model.swapValues()
+                    }, label: {
+                        Image(systemName: "arrow.up.arrow.down.circle.fill")
+                            .foregroundStyle(.customPrimaryDim, .customSecondary)
+                            .font(.system(size: 34))
+                    })
+                }
+                .padding(.vertical)
+                
+                Spacer()
+                
+                secondaryRectangle(model: model, text: "Last Updated:", result: model.exchangeDateString)
+                secondaryRectangle(model: model, text: "Exchange Rate:", result: model.exchangeRate)
+                    .padding(.bottom)
+                
+                ExchangeButton(model: model)
             }
-            .onTapGesture {
-                isInputActive = false
-            }
-            .overlay {
-                Button(action: {
-                    model.swapValues()
-                }, label: {
-                    Image(systemName: "arrow.up.arrow.down.circle.fill")
-                        .foregroundStyle(.customPrimaryDim, .customSecondary)
-                        .font(.system(size: 34))
-                })
-            }
-            .padding(.vertical)
-            
-            Spacer()
-            
-            secondaryRectangle(model: model, text: "Last Updated:", result: model.exchangeDateString)
-            secondaryRectangle(model: model, text: "Exchange Rate:", result: model.exchangeRate)
-                .padding(.bottom)
-            
-            ExchangeButton(model: model)
-        }
-        .frame(maxWidth: .infinity,
-               maxHeight: .infinity,
-               alignment: .topLeading)
-        .padding()
-        .task {
-            do {
-                try await model.getCurrencies()
-            } catch {
-                print(error)
+            .frame(maxWidth: .infinity,
+                   maxHeight: .infinity,
+                   alignment: .top)
+            .padding()
+            .task {
+                do {
+                    try await model.getCurrencies()
+                } catch {
+                    print(error)
+                }
             }
         }
         .ignoresSafeArea(.keyboard, edges: .bottom)

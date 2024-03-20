@@ -16,6 +16,9 @@ struct CustomRectangle: View {
     @Binding var selectedCurrency: String
     @Binding var amount: String
     var disabled: Bool
+    
+    @FocusState.Binding var isFocused: Bool
+    
     var body: some View {
         ZStack {
             RoundedRectangle(cornerSize: CGSize(width: 20, height: 20), style: .continuous)
@@ -37,6 +40,7 @@ struct CustomRectangle: View {
                     .frame(height: 70)
                     .font(.largeTitle.bold())
                     .disabled(disabled)
+                    .focused($isFocused)
                     
                     Menu {
                         ForEach(self.array, id: \.self) { element in
@@ -50,6 +54,9 @@ struct CustomRectangle: View {
                     }
                     .fontWeight(.bold)
                     .foregroundStyle(.customSecondary)
+                    .onTapGesture {
+                        isFocused = false
+                    }
 
 
                 }
