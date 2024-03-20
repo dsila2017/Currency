@@ -27,6 +27,7 @@ struct MainView: View {
                 //                }
                 CustomRectangle(backgroundColor: .purple, mainText: "Receive", array: model.data, selectedCurrency: $model.selectedToCurrency, amount: $model.exchangeResult, disabled: true)
             }
+            
             .overlay {
                 Button(action: {
                     model.swapValues()
@@ -40,10 +41,10 @@ struct MainView: View {
             
             Spacer()
             
-            secondaryRectangle(model: model, text: "Last Updated:", result: model.exchangeDate)
-            secondaryRectangle(model: model, text: "Exchange Rate:", result: model.exchangeRate)
+                secondaryRectangle(model: model, text: "Last Updated:", result: model.exchangeDate)
+                secondaryRectangle(model: model, text: "Exchange Rate:", result: model.exchangeRate)
+                .padding(.bottom)
             
-            Spacer()
             ExchangeButton(model: model)
         }
         .frame(maxWidth: .infinity,
@@ -67,7 +68,7 @@ struct MainView: View {
 struct ExchangeButton: View {
     @StateObject var model: viewModel
     var body: some View {
-        Button("Exchange") {
+        Button(action: {
             Task {
                 do {
                     try await model.exchange()
@@ -75,7 +76,18 @@ struct ExchangeButton: View {
                     print(error)
                 }
             }
-        }
+        }, label: {
+            HStack {
+                Text("Convert")
+                Image(systemName: "dollarsign.arrow.circlepath")
+            }
+            .foregroundStyle(.customPrimaryDim)
+            .frame(maxWidth: .infinity, maxHeight: 46)
+        })
+        .background(.customSecondary)
+        .fontWeight(.bold)
+        .cornerRadius(24)
+        .buttonStyle(.bordered)
         .alert(isPresented: $model.showDataAlert) {
             switch model.showDataAlertType {
             case .currencyError:

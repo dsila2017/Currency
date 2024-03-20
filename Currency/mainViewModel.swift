@@ -18,7 +18,7 @@ class viewModel: ObservableObject {
     @Published var amount = ""
     @Published var exchangeRate = "0.00"
     @Published var exchangeResult = ""
-    @Published var exchangeDate = "Now"
+    @Published var exchangeDate = "-"
     @Published var showDataAlert = false
     @Published var showDataAlertType: AlertType?
     
