@@ -18,7 +18,8 @@ class viewModel: ObservableObject {
     @Published var amount = ""
     @Published var exchangeRate = "0.00"
     @Published var exchangeResult = ""
-    @Published var exchangeDate = "-"
+    @Published var exchangeDateString = "-"
+    @Published var exchangeDate: Date = Date()
     @Published var showDataAlert = false
     @Published var showDataAlertType: AlertType?
     
@@ -35,9 +36,10 @@ class viewModel: ObservableObject {
         if dataValidation() {
             do {
                 let result: ExchangeRateModel = try await NetworkManager.shared.fetch(from: "https://v6.exchangerate-api.com/v6/5a9b9687e1b86c4c225b9e28/pair/\(selectedFromCurrency)/\(selectedToCurrency)/\(amount)")
-                exchangeRate = String(round(result.conversionRate * 1000) / 1000)
-                exchangeResult = String(round(result.conversionResult * 1000) / 1000)
-                exchangeDate = result.timeLastUpdateUTC
+                exchangeRate = String(format: "%.4f", round(result.conversionRate * 10000) / 10000)
+                exchangeResult = String(format: "%.2f", round(result.conversionResult * 100) / 100)
+                exchangeDate = convertStringToDate(string: result.timeLastUpdateUTC)
+                exchangeDateString = convertDateToString(date: exchangeDate)
             } catch {
                 print(error)
             }
@@ -77,5 +79,29 @@ class viewModel: ObservableObject {
         if exchangeResult != "" {
             exchangeResult = ""
         }
+    }
+    
+    func convertStringToDate(string: String) -> Date {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "E, d MMM yyyy HH:mm:ss Z"
+        if let date = dateFormatter.date(from: string) {
+            return date
+        } else {
+            print("Failed to convert the string to a Date.")
+            return Date()
+        }
+    }
+    
+    func convertDateToString(date: Date) -> String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateStyle = .medium
+        dateFormatter.timeStyle = .short
+        dateFormatter.doesRelativeDateFormatting = true
+        let localizedDate = dateFormatter.string(from: date)
+        return localizedDate
+    }
+    
+    func filterLetters() {
+        amount = amount.filter({$0.isNumber || $0 == "."})
     }
 }

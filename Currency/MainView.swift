@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct MainView: View {
+    @FocusState var isInputActive: Bool
     @ObservedObject var model = viewModel()
     var body: some View {
         VStack {
@@ -15,9 +16,18 @@ struct MainView: View {
                 .font(.headline.bold())
             VStack {
                 CustomRectangle(backgroundColor: .yellow, mainText: "Send", array: model.data, selectedCurrency: $model.selectedFromCurrency, amount: $model.amount, disabled: false)
-                    .keyboardType(.numberPad)
-                    .onTapGesture {
-                        UIApplication.shared.endEditing()
+                    .keyboardType(.decimalPad)
+                    .focused($isInputActive)
+                    .toolbar {
+                        ToolbarItemGroup(placement: .keyboard) {
+                            Spacer()
+                            Button("Done") {
+                                model.filterLetters()
+                                model.clearExchangeAmounts()
+                                isInputActive = false
+                            }
+                            .fontWeight(.bold)
+                        }
                     }
                 //                .onChange(of: model.amount + model.selectedFromCurrency + model.selectedToCurrency) {
                 //                    Task {
@@ -30,7 +40,9 @@ struct MainView: View {
                 //                }
                 CustomRectangle(backgroundColor: .purple, mainText: "Receive", array: model.data, selectedCurrency: $model.selectedToCurrency, amount: $model.exchangeResult, disabled: true)
             }
-            
+            .onTapGesture {
+                isInputActive = false
+            }
             .overlay {
                 Button(action: {
                     model.swapValues()
@@ -44,15 +56,15 @@ struct MainView: View {
             
             Spacer()
             
-                secondaryRectangle(model: model, text: "Last Updated:", result: model.exchangeDate)
-                secondaryRectangle(model: model, text: "Exchange Rate:", result: model.exchangeRate)
+            secondaryRectangle(model: model, text: "Last Updated:", result: model.exchangeDateString)
+            secondaryRectangle(model: model, text: "Exchange Rate:", result: model.exchangeRate)
                 .padding(.bottom)
             
             ExchangeButton(model: model)
         }
         .frame(maxWidth: .infinity,
-                    maxHeight: .infinity,
-                    alignment: .topLeading)
+               maxHeight: .infinity,
+               alignment: .topLeading)
         .padding()
         .task {
             do {
@@ -61,6 +73,7 @@ struct MainView: View {
                 print(error)
             }
         }
+        .ignoresSafeArea(.keyboard, edges: .bottom)
     }
 }
 
