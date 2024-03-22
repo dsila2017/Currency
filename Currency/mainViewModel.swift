@@ -12,7 +12,7 @@ enum AlertType {
 }
 @MainActor
 class viewModel: ObservableObject {
-    @Published var data: [[String]] = [[""]]
+    @Published var data: [[String]] = [["", ""]]
     @Published var selectedFromCurrency = "Select"
     @Published var selectedToCurrency = "Select"
     @Published var amount = ""
@@ -55,6 +55,7 @@ class viewModel: ObservableObject {
     }
     
     func dataValidation() -> Bool {
+        filterLetters()
         if selectedFromCurrency != "Select" && selectedToCurrency != "Select" {
             if amount == "" {
                 clearExchangeAmounts()

@@ -10,6 +10,7 @@ import SwiftUI
 struct MainView: View {
     @ObservedObject var model = viewModel()
     @FocusState var isFocused: Bool
+    @State var trigger = false
     
     var body: some View {
         GeometryReader { geometry in
@@ -17,14 +18,12 @@ struct MainView: View {
                 Text("Convert")
                     .font(.headline.bold())
                 VStack {
-                    CustomRectangle(backgroundColor: .yellow, mainText: "Send", array: model.data, selectedCurrency: $model.selectedFromCurrency, amount: $model.amount, disabled: false, isFocused: $isFocused)
+                    CustomRectangle(selectedCurrency: $model.selectedFromCurrency, amount: $model.amount, isFocused: $isFocused, backgroundColor: .yellow, mainText: "Send", array: model.data, disabled: false)
                         .keyboardType(.decimalPad)
                         .toolbar {
                             ToolbarItemGroup(placement: .keyboard) {
                                 Spacer()
                                 Button("Done") {
-                                    model.filterLetters()
-                                    model.clearExchangeAmounts()
                                     isFocused = false
                                 }
                                 .fontWeight(.bold)
@@ -39,16 +38,22 @@ struct MainView: View {
                     //                        }
                     //                    }
                     //                }
-                    CustomRectangle(backgroundColor: .purple, mainText: "Receive", array: model.data, selectedCurrency: $model.selectedToCurrency, amount: $model.exchangeResult, disabled: true, isFocused: $isFocused)
+                    CustomRectangle(selectedCurrency: $model.selectedToCurrency, amount: $model.exchangeResult, isFocused: $isFocused, backgroundColor: .purple, mainText: "Receive", array: model.data, disabled: true)
                 }
+                .onChange(of: model.amount, {_,_ in
+                    model.filterLetters()
+                    model.clearExchangeAmounts()
+                })
                 .overlay {
                     Button(action: {
+                        trigger.toggle()
                         model.swapValues()
                     }, label: {
                         Image(systemName: "arrow.up.arrow.down.circle.fill")
                             .foregroundStyle(.customPrimaryDim, .customSecondary)
                             .font(.system(size: 34))
                     })
+                    .sensoryFeedback(.selection, trigger: trigger)
                 }
                 .padding(.vertical)
                 
@@ -78,69 +83,4 @@ struct MainView: View {
 
 #Preview {
     MainView()
-}
-
-struct ExchangeButton: View {
-    @StateObject var model: viewModel
-    var body: some View {
-        Button(action: {
-            Task {
-                do {
-                    try await model.exchange()
-                } catch {
-                    print(error)
-                }
-            }
-        }, label: {
-            HStack {
-                Text("Convert")
-                Image(systemName: "dollarsign.arrow.circlepath")
-            }
-            .foregroundStyle(.customPrimaryDim)
-            .frame(maxWidth: .infinity, maxHeight: 46)
-        })
-        .background(.customSecondary)
-        .fontWeight(.bold)
-        .cornerRadius(24)
-        .buttonStyle(.bordered)
-        .alert(isPresented: $model.showDataAlert) {
-            switch model.showDataAlertType {
-            case .currencyError:
-                return Alert(title: Text("Please select currency 💱"))
-            case .amountError:
-                return Alert(title: Text("Please enter amount 💰"))
-            case .currencyWithAmountError:
-                return Alert(title: Text("Please select currency 💱 and enter amount 💰"))
-            case .none:
-                return Alert(title: Text(""))
-            }
-        }
-    }
-}
-
-struct secondaryRectangle: View {
-    @StateObject var model: viewModel
-    var text: String
-    var result: String
-    var body: some View {
-        ZStack {
-            RoundedRectangle(cornerSize: CGSize(width: 20, height: 20), style: .continuous)
-                .frame(maxWidth: .infinity, maxHeight: 56)
-                .foregroundStyle(.color)
-            HStack {
-                Text(text)
-                    .frame(maxWidth: .infinity, alignment: .center)
-                Text(result)
-                    .frame(maxWidth: .infinity, alignment: .center)
-            }
-            .foregroundStyle(.customText)
-            .font(.subheadline.weight(.medium))
-        }
-    }
-}
-
-extension UIApplication {
-    func endEditing() {
-        sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-    }
 }

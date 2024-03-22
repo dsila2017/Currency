@@ -8,22 +8,24 @@
 import SwiftUI
 
 struct CustomRectangle: View {
-    @State var text = ""
+    @Binding var selectedCurrency: String
+    @Binding var amount: String
+    @State var selectTrigger = false
+    @FocusState.Binding var isFocused: Bool
+    
     var backgroundColor: Color
     var mainText: String
     var array: [[String]]
-    //var currencyNames: [String]
-    @Binding var selectedCurrency: String
-    @Binding var amount: String
     var disabled: Bool
-    
-    @FocusState.Binding var isFocused: Bool
     
     var body: some View {
         ZStack {
-            RoundedRectangle(cornerSize: CGSize(width: 20, height: 20), style: .continuous)
+            RoundedRectangle(cornerSize: CGSize(width: 20, height: 20), style: .circular)
                 .frame(maxHeight: 170)
                 .foregroundStyle(backgroundColor.opacity(0.3))
+                .onTapGesture {
+                    isFocused = false
+                }
             VStack {
                 Text(mainText)
                     .foregroundStyle(.customSecondary)
@@ -41,11 +43,15 @@ struct CustomRectangle: View {
                     .font(.largeTitle.bold())
                     .disabled(disabled)
                     .focused($isFocused)
+                    .sensoryFeedback(.selection, trigger: isFocused) {_,_  in
+                        isFocused == true
+                    }
                     
                     Menu {
                         ForEach(self.array, id: \.self) { element in
                             Button(element[1] + ":" + " " + element[0] , action: {
                                 self.selectedCurrency = element[0]
+                                self.selectTrigger.toggle()
                             })
                         }
                     } label: {
@@ -54,11 +60,11 @@ struct CustomRectangle: View {
                     }
                     .fontWeight(.bold)
                     .foregroundStyle(.customSecondary)
-                    .onTapGesture {
+                    .onTapGesture(perform: {
                         isFocused = false
-                    }
-
-
+                        self.selectTrigger.toggle()
+                    })
+                    .sensoryFeedback(.selection, trigger: selectTrigger)
                 }
             }
             .padding()
