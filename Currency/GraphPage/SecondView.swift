@@ -9,7 +9,7 @@ import SwiftUI
 import Charts
 
 struct SecondView: View {
-    @StateObject var model = GraphViewModel(baseCurrency: "USD", finalCurrency: "EUR")
+    @StateObject var model: GraphViewModel
     
     var gradientColor = LinearGradient(gradient: Gradient(colors: [Color.accentColor.opacity(0.4), Color.accentColor.opacity(0)]), startPoint: .top, endPoint: .bottom)
     var body: some View {
@@ -29,11 +29,6 @@ struct SecondView: View {
                 .foregroundStyle(gradientColor)
                 
             }
-//            .chartXAxis {
-//                AxisMarks(preset: .extended, position: .bottom, values: .stride(by: .day)) { value in
-//                    
-//                }
-//            }
             
             Picker(selection: $model.selector) {
                 Text("Day").tag(0)
@@ -47,7 +42,7 @@ struct SecondView: View {
                 Task {
                     do {
                         try await model.getData(selector: newValue)
-                    }catch {
+                    } catch {
                         print(error)
                     }
                 }
@@ -61,9 +56,8 @@ struct SecondView: View {
             }
         }
     }
-        
 }
 
 #Preview {
-    SecondView()
+    SecondView(model: GraphViewModel(baseCurrency: "USD", finalCurrency: "EUR"))
 }

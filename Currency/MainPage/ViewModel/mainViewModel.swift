@@ -21,6 +21,7 @@ class viewModel: ObservableObject {
     @Published var exchangeDateString = "-"
     @Published var exchangeDate: Date = Date()
     @Published var showDataAlert = false
+    @Published var showChartAlert = false
     @Published var showDataAlertType: AlertType?
     
     func getCurrencies() async throws {
@@ -52,6 +53,13 @@ class viewModel: ObservableObject {
         if selectedFromCurrency != "Select" || selectedToCurrency != "Select" {
             (selectedFromCurrency, selectedToCurrency) = (selectedToCurrency, selectedFromCurrency)
         }
+    }
+    
+    func chartValidation() -> Bool {
+        if selectedFromCurrency != "Select" && selectedToCurrency != "Select" {
+            return true
+        }
+        return false
     }
     
     func dataValidation() -> Bool {

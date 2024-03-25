@@ -16,7 +16,7 @@ struct ContentView: View {
                     Image(systemName: "dollarsign.arrow.circlepath")
                 }
             
-            SecondView()
+            SecondView(model: GraphViewModel(baseCurrency: "", finalCurrency: ""))
                 .tabItem {
                     Image(systemName: "chart.bar.xaxis")
                 }

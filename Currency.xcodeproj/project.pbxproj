@@ -12,6 +12,7 @@
 		63C5A0A52BAC9C47001C087F /* UIApplicationExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63C5A0A42BAC9C47001C087F /* UIApplicationExtension.swift */; };
 		63D3A6932BAD26520070348E /* GraphViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63D3A6922BAD26520070348E /* GraphViewModel.swift */; };
 		63D3A6962BAD26880070348E /* GraphModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63D3A6952BAD26880070348E /* GraphModel.swift */; };
+		63D3A6982BB1BAA50070348E /* NavigationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63D3A6972BB1BAA50070348E /* NavigationManager.swift */; };
 		63EC83BA2BA86030006A593B /* CurrencyApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63EC83B92BA86030006A593B /* CurrencyApp.swift */; };
 		63EC83BC2BA86030006A593B /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63EC83BB2BA86030006A593B /* ContentView.swift */; };
 		63EC83BE2BA86030006A593B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 63EC83BD2BA86030006A593B /* Assets.xcassets */; };
@@ -30,6 +31,7 @@
 		63C5A0A42BAC9C47001C087F /* UIApplicationExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIApplicationExtension.swift; sourceTree = "<group>"; };
 		63D3A6922BAD26520070348E /* GraphViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GraphViewModel.swift; sourceTree = "<group>"; };
 		63D3A6952BAD26880070348E /* GraphModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GraphModel.swift; sourceTree = "<group>"; };
+		63D3A6972BB1BAA50070348E /* NavigationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationManager.swift; sourceTree = "<group>"; };
 		63EC83B62BA86030006A593B /* Currency.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Currency.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		63EC83B92BA86030006A593B /* CurrencyApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyApp.swift; sourceTree = "<group>"; };
 		63EC83BB2BA86030006A593B /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -134,6 +136,7 @@
 				63D3A6942BAD26590070348E /* GraphPage */,
 				63C5A09F2BAC9BAB001C087F /* CustomViews+Extensions */,
 				63EC83CF2BA89233006A593B /* Networking.swift */,
+				63D3A6972BB1BAA50070348E /* NavigationManager.swift */,
 				63EC83BD2BA86030006A593B /* Assets.xcassets */,
 				63EC83BF2BA86030006A593B /* Preview Content */,
 			);
@@ -227,6 +230,7 @@
 				63EC83C82BA86E06006A593B /* MainView.swift in Sources */,
 				63C5A0A52BAC9C47001C087F /* UIApplicationExtension.swift in Sources */,
 				63EC83CA2BA86E27006A593B /* SecondView.swift in Sources */,
+				63D3A6982BB1BAA50070348E /* NavigationManager.swift in Sources */,
 				63EC83D22BA893E1006A593B /* mainViewModel.swift in Sources */,
 				63EC83BA2BA86030006A593B /* CurrencyApp.swift in Sources */,
 				63D3A6962BAD26880070348E /* GraphModel.swift in Sources */,

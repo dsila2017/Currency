@@ -9,6 +9,7 @@ import Foundation
 
 @MainActor
 class GraphViewModel: ObservableObject {
+    let id = UUID()
     @Published var rawChartData = [CustomDate: [GraphModel]]()
     @Published var chartData = [ChartData]()
     @Published var selector: Int = 0
@@ -81,7 +82,9 @@ class GraphViewModel: ObservableObject {
             let components = DateComponents(year: i.year, month: i.month, day: i.day)
             let date = calendar.date(from: components)!
             
-            chartData.append(ChartData(date: date, rate: i.conversionAmounts[finalCurrency]!))
+            if let rate = i.conversionAmounts[finalCurrency] {
+                chartData.append(ChartData(date: date, rate: rate))
+            }
         }
         return chartData
     }
@@ -100,6 +103,6 @@ class GraphViewModel: ObservableObject {
     }
 }
 
-enum CustomDate {
+enum CustomDate: Hashable {
     case Day, Month, Year
 }
