@@ -10,18 +10,18 @@ import SwiftUI
 struct ContentView: View {
     
     var body: some View {
-        //TabView {
+        TabView {
             MainView()
-                //.tabItem {
-                    //Image(systemName: "dollarsign.arrow.circlepath")
-                //}
-            //
-            //SecondView()
-                //.tabItem {
-                  //  Image(systemName: "larisign.arrow.circlepath")
-                //}
-        //}
-        //.tint(.yellow)
+                .tabItem {
+                    Image(systemName: "dollarsign.arrow.circlepath")
+                }
+            
+            SecondView()
+                .tabItem {
+                    Image(systemName: "chart.bar.xaxis")
+                }
+        }
+        .tint(.black)
     }
         
 }

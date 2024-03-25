@@ -23,9 +23,6 @@ struct CustomRectangle: View {
             RoundedRectangle(cornerSize: CGSize(width: 20, height: 20), style: .circular)
                 .frame(maxHeight: 170)
                 .foregroundStyle(backgroundColor.opacity(0.3))
-                .onTapGesture {
-                    isFocused = false
-                }
             VStack {
                 Text(mainText)
                     .foregroundStyle(.customSecondary)
@@ -55,16 +52,17 @@ struct CustomRectangle: View {
                             })
                         }
                     } label: {
-                        Text(selectedCurrency)
-                        Image(systemName: "chevron.down")
+                            Text(selectedCurrency)
+                            Image(systemName: "chevron.down")
                     }
                     .fontWeight(.bold)
                     .foregroundStyle(.customSecondary)
-                    .onTapGesture(perform: {
+                    .sensoryFeedback(.selection, trigger: selectTrigger)
+                    .onTapGesture {
+                        print("inside Tapped")
                         isFocused = false
                         self.selectTrigger.toggle()
-                    })
-                    .sensoryFeedback(.selection, trigger: selectTrigger)
+                    }
                 }
             }
             .padding()
