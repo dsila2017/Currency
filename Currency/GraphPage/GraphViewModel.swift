@@ -40,7 +40,6 @@ class GraphViewModel: ObservableObject {
     func getHistoryResult(type: CustomDate) async throws {
         var calendar = Calendar.current
         calendar.timeZone = TimeZone(identifier: "UTC")!
-        
         let firstDate = calendar.dateComponents([.year, .month, .day], from: getHistoryDate(date: type, agoValue: 0))
         let secondDate = calendar.dateComponents([.year, .month, .day], from: getHistoryDate(date: type, agoValue: 1))
         let thirdDate = calendar.dateComponents([.year, .month, .day], from: getHistoryDate(date: type, agoValue: 2))
@@ -50,34 +49,29 @@ class GraphViewModel: ObservableObject {
         let dateStampArray = [firstDate, secondDate, thirdDate, fourthDate, fifthDate]
         var dataArray = [GraphModel]()
         
-        for date in dateStampArray {
-            guard let year = date.year, let month = date.month, let day = date.day else { return }
-            do {
-                let data: GraphModel = try await NetworkManager.shared.fetch(from: "https://v6.exchangerate-api.com/v6/5a9b9687e1b86c4c225b9e28/history/\(baseCurrency)/\(year)/\(month)/\(day)/1")
-                dataArray.append(data)
-            } catch {
-                print(error)
+        if rawChartData[type] == nil {
+            print("FETCHING")
+            for date in dateStampArray {
+                guard let year = date.year, let month = date.month, let day = date.day else { return }
+                do {
+                    let data: GraphModel = try await NetworkManager.shared.fetch(from: "https://v6.exchangerate-api.com/v6/5a9b9687e1b86c4c225b9e28/history/\(baseCurrency)/\(year)/\(month)/\(day)/1")
+                    dataArray.append(data)
+                } catch {
+                    print(error)
+                }
             }
-        }
-        switch type {
-        case .Day:
-            rawChartData[.Day] = dataArray
-            chartData = convertToChartsDatax(rawData: rawChartData, finalCurrency: finalCurrency, type: .Day)
-        case .Month:
-            rawChartData[.Month] = dataArray
-            chartData = convertToChartsDatax(rawData: rawChartData, finalCurrency: finalCurrency, type: .Month)
-        case .Year:
-            rawChartData[.Year] = dataArray
-            chartData = convertToChartsDatax(rawData: rawChartData, finalCurrency: finalCurrency, type: .Year)
+                rawChartData[type] = dataArray
+                chartData = convertToChartsData(rawData: rawChartData, finalCurrency: finalCurrency, type: type)
+        } else {
+            chartData = convertToChartsData(rawData: rawChartData, finalCurrency: finalCurrency, type: type)
         }
     }
     
-    func convertToChartsDatax(rawData: [CustomDate: [GraphModel]], finalCurrency: String, type: CustomDate) -> [ChartData] {
+    func convertToChartsData(rawData: [CustomDate: [GraphModel]], finalCurrency: String, type: CustomDate) -> [ChartData] {
         var chartData = [ChartData]()
         guard let data = rawData[type] else {return []}
         
         for i in data {
-            
             let calendar = Calendar(identifier: .gregorian)
             let components = DateComponents(year: i.year, month: i.month, day: i.day)
             let date = calendar.date(from: components)!
