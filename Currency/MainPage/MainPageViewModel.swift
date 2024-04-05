@@ -7,27 +7,37 @@
 
 import Foundation
 
-enum AlertType {
+enum MainAlertType {
     case currencyError, amountError, currencyWithAmountError
 }
+
 @MainActor
-class viewModel: ObservableObject {
-    @Published var data: [[String]] = [["", ""]]
+class mainPageViewModel: ObservableObject {
+    @Published var data: [[String]] = [[String]]()
+    @Published var rawData: [String: String] = [String: String]()
     @Published var selectedFromCurrency = "Select"
     @Published var selectedToCurrency = "Select"
     @Published var amount = ""
     @Published var exchangeRate = "0.00"
     @Published var exchangeResult = ""
-    @Published var exchangeDateString = "-"
+    @Published var responseMS = "-"
     @Published var exchangeDate: Date = Date()
     @Published var showDataAlert = false
     @Published var showChartAlert = false
-    @Published var showDataAlertType: AlertType?
+    @Published var showDataAlertType: MainAlertType?
+
+    func sortDataArray() {
+        for i in rawData {
+            data.append([i.key, i.value])
+        }
+        data.sort(by: {$0[1] < $1[1]})
+    }
     
     func getCurrencies() async throws {
         do {
-            let result: CurrencyModel = try await NetworkManager.shared.fetch(from: "https://v6.exchangerate-api.com/v6/5a9b9687e1b86c4c225b9e28/codes")
-            self.data = result.supportedCodes
+            let result: CurrencyModel = try await NetworkManager.shared.fetch(from: "https://api.fastforex.io/currencies?api_key=7f51711cb3-121b1b189e-sbfqzk")
+            self.rawData = result.currencies
+            sortDataArray()
         } catch {
             print(error)
         }
@@ -36,11 +46,11 @@ class viewModel: ObservableObject {
     func exchange() async throws {
         if dataValidation() {
             do {
-                let result: ExchangeRateModel = try await NetworkManager.shared.fetch(from: "https://v6.exchangerate-api.com/v6/5a9b9687e1b86c4c225b9e28/pair/\(selectedFromCurrency)/\(selectedToCurrency)/\(amount)")
-                exchangeRate = String(format: "%.4f", round(result.conversionRate * 10000) / 10000)
-                exchangeResult = String(format: "%.2f", round(result.conversionResult * 100) / 100)
-                exchangeDate = convertStringToDate(string: result.timeLastUpdateUTC)
-                exchangeDateString = convertDateToString(date: exchangeDate)
+                let result: CurrencyConversionResult = try await NetworkManager.shared.fetch(from: "https://api.fastforex.io/convert?from=\(selectedFromCurrency)&to=\(selectedToCurrency)&amount=\(amount)&api_key=7f51711cb3-121b1b189e-sbfqzk")
+                exchangeRate = String(result.result["rate"] ?? 0)
+                exchangeResult = String(result.result[selectedToCurrency] ?? 0)
+                responseMS = String(result.ms) + " " + "ms"
+                print(result)
             } catch {
                 print(error)
             }
@@ -52,6 +62,7 @@ class viewModel: ObservableObject {
     func swapValues() {
         if selectedFromCurrency != "Select" || selectedToCurrency != "Select" {
             (selectedFromCurrency, selectedToCurrency) = (selectedToCurrency, selectedFromCurrency)
+            clearExchangeAmounts()
         }
     }
     
@@ -67,17 +78,17 @@ class viewModel: ObservableObject {
         if selectedFromCurrency != "Select" && selectedToCurrency != "Select" {
             if amount == "" {
                 clearExchangeAmounts()
-                showDataAlertType = AlertType.amountError
+                showDataAlertType = MainAlertType.amountError
                 return false
             }
         }
         else if selectedFromCurrency == "Select" || selectedToCurrency == "Select" {
             if amount == "" {
-                showDataAlertType = AlertType.currencyWithAmountError
+                showDataAlertType = MainAlertType.currencyWithAmountError
                 return false
             }
             else {
-                showDataAlertType = AlertType.currencyError
+                showDataAlertType = MainAlertType.currencyError
                 return false
             }
         }
@@ -87,7 +98,20 @@ class viewModel: ObservableObject {
     func clearExchangeAmounts() {
         if exchangeResult != "" {
             exchangeResult = ""
+            clearResponseAndRate()
         }
+    }
+    
+    func clearResponseAndRate() {
+        print("ENTERED")
+        if responseMS != "-" && exchangeRate != "0.00" {
+            responseMS = "-"
+            exchangeRate = "0.00"
+        }
+    }
+    
+    func filterLetters() {
+        amount = amount.filter({$0.isNumber || $0 == "."})
     }
     
     func convertStringToDate(string: String) -> Date {
@@ -108,9 +132,5 @@ class viewModel: ObservableObject {
         dateFormatter.doesRelativeDateFormatting = true
         let localizedDate = dateFormatter.string(from: date)
         return localizedDate
-    }
-    
-    func filterLetters() {
-        amount = amount.filter({$0.isNumber || $0 == "."})
     }
 }

@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 
 struct secondaryRectangle: View {
-    @StateObject var model: viewModel
+    @StateObject var model: mainPageViewModel
     var text: String
     var result: String
     var body: some View {

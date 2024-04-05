@@ -7,8 +7,8 @@
 
 import SwiftUI
 
-struct MainView: View {
-    @ObservedObject var model = viewModel()
+struct MainPageView: View {
+    @ObservedObject var model = mainPageViewModel()
     @FocusState var isFocused: Bool
     @State var trigger = false
     
@@ -79,8 +79,8 @@ struct MainView: View {
                     
                     Spacer()
                     
-                    secondaryRectangle(model: model, text: "Last Updated:", result: model.exchangeDateString)
                     secondaryRectangle(model: model, text: "Exchange Rate:", result: model.exchangeRate)
+                    secondaryRectangle(model: model, text: "Response Time:", result: model.responseMS)
                         .padding(.bottom)
                     
                     ExchangeButton(model: model)
@@ -102,5 +102,5 @@ struct MainView: View {
 }
 
 #Preview {
-    MainView()
+    MainPageView()
 }

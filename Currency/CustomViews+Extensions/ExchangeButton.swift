@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 
 struct ExchangeButton: View {
-    @StateObject var model: viewModel
+    @StateObject var model: mainPageViewModel
     @State var trigger = false
     var body: some View {
         Button(action: {
