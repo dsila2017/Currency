@@ -70,6 +70,7 @@ struct CustomRectangle: View {
     }
 }
 
-//#Preview {
-//    CustomRectangle(backgroundColor: .red, mainText: "Send", array: ["USD", "GEL", "3", "4"])
-//}
+#Preview {
+    CustomRectangle(selectedCurrency: .constant("true"), amount: .constant("true"), isFocused: FocusState<Bool>().projectedValue, backgroundColor: .red, mainText: "s", array: [["s"]], disabled: true)
+                    
+}

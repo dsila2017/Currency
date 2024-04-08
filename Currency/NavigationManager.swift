@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 
 enum Destination {
-    case secondView(model: GraphViewModel)
+    case chartView(model: ChartViewModel)
 }
 
 class NavigationManager: ObservableObject {
@@ -32,7 +32,7 @@ class NavigationManager: ObservableObject {
 extension Destination: Hashable {
     static func == (lhs: Destination, rhs: Destination) -> Bool {
         switch(lhs, rhs) {
-        case (.secondView(let lhsx), .secondView(let rhsx)):
+        case (.chartView(let lhsx), .chartView(let rhsx)):
             return lhsx.id == rhsx.id
         default:
             return false

@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct MainPageView: View {
-    @ObservedObject var model = mainPageViewModel()
+    @EnvironmentObject var model: mainPageViewModel
     @FocusState var isFocused: Bool
     @State var trigger = false
     
@@ -25,7 +25,7 @@ struct MainPageView: View {
                     .overlay(alignment: .trailing) {
                         Button {
                             if model.chartValidation() {
-                                navManager.push(to: .secondView(model: GraphViewModel(baseCurrency: model.selectedFromCurrency, finalCurrency: model.selectedToCurrency)))
+                                navManager.push(to: .chartView(model: ChartViewModel()))
                             } else {
                                 model.showChartAlert = true
                             }
@@ -90,11 +90,11 @@ struct MainPageView: View {
                        alignment: .top)
                 .padding()
                 .task {
-                    do {
-                        try await model.getCurrencies()
-                    } catch {
-                        print(error)
-                    }
+//                    do {
+//                        try await model.getCurrencies()
+//                    } catch {
+//                        print(error)
+//                    }
                 }
             }
             .ignoresSafeArea(.keyboard, edges: .bottom)

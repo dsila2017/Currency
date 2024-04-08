@@ -26,11 +26,23 @@ class mainPageViewModel: ObservableObject {
     @Published var showChartAlert = false
     @Published var showDataAlertType: MainAlertType?
 
+    init() {
+        print("INITIALIZING")
+        Task {
+                do {
+                    try await getCurrencies()
+                } catch {
+                    print(error)
+                }
+            }
+    }
+    
     func sortDataArray() {
+        var tempData = [[String]]()
         for i in rawData {
-            data.append([i.key, i.value])
+            tempData.append([i.key, i.value])
         }
-        data.sort(by: {$0[1] < $1[1]})
+        data = tempData.sorted(by: {$0[1] < $1[1]})
     }
     
     func getCurrencies() async throws {

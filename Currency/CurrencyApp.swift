@@ -9,20 +9,21 @@ import SwiftUI
 
 @main
 struct CurrencyApp: App {
-    @ObservedObject var navManager = NavigationManager()
-    
+    @StateObject var navManager = NavigationManager()
+    @StateObject var mainModel = mainPageViewModel()
     var body: some Scene {
         WindowGroup {
             NavigationStack(path: $navManager.path) {
                 ContentView()
                     .navigationDestination(for: Destination.self) { destination in
                         switch destination {
-                        case.secondView(let model):
-                            SecondView(model: model)
+                        case.chartView(let model):
+                            ChartView(model: model)
                         }
                     }
             }
             .environmentObject(navManager)
+            .environmentObject(mainModel)
         }
     }
 }
